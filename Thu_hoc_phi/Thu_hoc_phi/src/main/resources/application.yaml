@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /Thuhocphi
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/thuhocphi"
+    username: root
+    password: 878264
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  signerKey: "H8s2xxK7ztwt63ChqEhmJTDEiYMTKIKfgGCPAxgWN2FfMBZlAJEyW+y+O4Q8M97R"
