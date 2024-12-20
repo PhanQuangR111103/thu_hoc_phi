@@ -2,9 +2,13 @@ package com.example.Thu_hoc_phi.mapper;
 
 import com.example.Thu_hoc_phi.dto.request.UserCreationRequest;
 import com.example.Thu_hoc_phi.dto.request.UserUpdateRequest;
+import com.example.Thu_hoc_phi.dto.response.SubjectResponse;
 import com.example.Thu_hoc_phi.dto.response.UserResponse;
+import com.example.Thu_hoc_phi.entity.Subject;
 import com.example.Thu_hoc_phi.entity.User;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
@@ -50,6 +54,7 @@ public class UserMapperImpl implements UserMapper {
         if ( set != null ) {
             userResponse.roles( new LinkedHashSet<String>( set ) );
         }
+        userResponse.subjects( subjectSetToSubjectResponseList( user.getSubjects() ) );
 
         return userResponse.build();
     }
@@ -64,5 +69,38 @@ public class UserMapperImpl implements UserMapper {
         user.setFirstName( request.getFirstName() );
         user.setLastName( request.getLastName() );
         user.setDob( request.getDob() );
+    }
+
+    @Override
+    public SubjectResponse toSubjectResponse(Subject subject) {
+        if ( subject == null ) {
+            return null;
+        }
+
+        SubjectResponse.SubjectResponseBuilder subjectResponse = SubjectResponse.builder();
+
+        subjectResponse.id( subject.getId() );
+        subjectResponse.name( subject.getName() );
+        subjectResponse.tinchi( subject.getTinchi() );
+        if ( subject.getFee() != null ) {
+            subjectResponse.fee( subject.getFee() );
+        }
+        subjectResponse.startTime( subject.getStartTime() );
+        subjectResponse.endTime( subject.getEndTime() );
+
+        return subjectResponse.build();
+    }
+
+    protected List<SubjectResponse> subjectSetToSubjectResponseList(Set<Subject> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        List<SubjectResponse> list = new ArrayList<SubjectResponse>( set.size() );
+        for ( Subject subject : set ) {
+            list.add( toSubjectResponse( subject ) );
+        }
+
+        return list;
     }
 }

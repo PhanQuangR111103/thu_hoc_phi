@@ -3,11 +3,13 @@ package com.example.Thu_hoc_phi.service;
 import com.example.Thu_hoc_phi.dto.request.UserCreationRequest;
 import com.example.Thu_hoc_phi.dto.request.UserUpdateRequest;
 import com.example.Thu_hoc_phi.dto.response.UserResponse;
+import com.example.Thu_hoc_phi.entity.Subject;
 import com.example.Thu_hoc_phi.entity.User;
 import com.example.Thu_hoc_phi.enums.Role;
 import com.example.Thu_hoc_phi.exception.AppException;
 import com.example.Thu_hoc_phi.exception.ErrorCode;
 import com.example.Thu_hoc_phi.mapper.UserMapper;
+import com.example.Thu_hoc_phi.repository.SubjectRepository;
 import com.example.Thu_hoc_phi.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +29,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserService {
-     UserRepository userRepository;
-     UserMapper userMapper;
-     PasswordEncoder passwordEncoder;
+    UserRepository userRepository;
+    UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
+    SubjectRepository subjectRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createUser(UserCreationRequest request) {
@@ -47,7 +50,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public UserResponse getMyInfo(){
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
@@ -64,7 +67,7 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public void  deleteUser(String userId) {
+    public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
@@ -75,7 +78,28 @@ public class UserService {
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
-    public UserResponse getUser(String id){
+    public UserResponse getUser(String id) {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found")));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse addSubjectToUser(String userId, Long subjectId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> new AppException(ErrorCode.SUBJECT_NOT_EXISTED));
+
+        user.getSubjects().add(subject);
+        userRepository.save(user);
+        return userMapper.toUserResponse(user);
+    }
+
+    public Double getTotalFee(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        Double totalCost = user.getSubjects()
+                .stream()
+                .mapToDouble(Subject::getFee)
+                .sum();
+        return totalCost;
+    }
 }
+

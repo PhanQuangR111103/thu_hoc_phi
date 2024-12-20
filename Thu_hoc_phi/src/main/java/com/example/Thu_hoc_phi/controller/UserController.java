@@ -4,7 +4,6 @@ import com.example.Thu_hoc_phi.dto.request.ApiResponse;
 import com.example.Thu_hoc_phi.dto.request.UserCreationRequest;
 import com.example.Thu_hoc_phi.dto.request.UserUpdateRequest;
 import com.example.Thu_hoc_phi.dto.response.UserResponse;
-import com.example.Thu_hoc_phi.entity.User;
 import com.example.Thu_hoc_phi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -69,5 +68,19 @@ public class UserController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().code(1000)
                 .result("User has been deleted").build();
+    }
+
+    @PostMapping("/{userId}/add/{subjectId}")
+    ApiResponse<UserResponse> addSubjectToUser(@PathVariable String userId, @PathVariable Long subjectId) {
+        return ApiResponse.<UserResponse>builder().code(1000)
+                .result(userService.addSubjectToUser(userId, subjectId))
+                .build();
+    }
+
+    @GetMapping("/{userId}/totalFee")
+    public ApiResponse<Double> getTotalFee(@PathVariable String userId) {
+        Double totalCost = userService.getTotalFee(userId);
+        return ApiResponse.<Double>builder().code(1000)
+                .result(totalCost).build();
     }
 }

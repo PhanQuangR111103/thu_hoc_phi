@@ -4,7 +4,7 @@ server:
     context-path: /Thuhocphi
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/thuhocphi"
+    url: "jdbc:mysql://db:3306/thuhocphi"
     username: root
     password: 878264
   jpa:

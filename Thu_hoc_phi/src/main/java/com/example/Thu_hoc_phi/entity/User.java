@@ -23,7 +23,9 @@ public class User {
      String firstName;
      String lastName;
      LocalDate dob;
-
     @ElementCollection
      Set<String> roles;
+    @ManyToMany
+    @JoinTable( name = "user_subjects", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "subject_id") )
+    Set<Subject> subjects;
 }
